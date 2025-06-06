@@ -2,7 +2,7 @@
   "name": "ci-cd-nodejs-mysql-jenkins",
   "version": "1.0.0",
   "type": "module",
-  "description": "REST API articles Node.js Express MySQL",
+  "description": "REST API articles app with Node.js",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
