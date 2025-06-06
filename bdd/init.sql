@@ -11,3 +11,8 @@ INSERT INTO articles (titre, contenu) VALUES
 ('Troisième article','Contenu 3'),
 ('Quatrième article','Contenu 4'),
 ('Cinquième article','Contenu 5');
+('Sixième article','Contenu 6'),
+('Septième article','Contenu 7'),
+('Huitième article','Contenu 8'),
+('Neuvième article','Contenu 9'),
+('Dixième article','Contenu 10');
