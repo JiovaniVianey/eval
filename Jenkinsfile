@@ -1,15 +1,7 @@
 pipeline {
+  agent any
 
-  agent {
-    docker {
-      image 'node:20-alpine'
-      args  '-v /var/run/docker.sock:/var/run/docker.sock'
-    }
-  }
-
-  triggers {
-    githubPush()
-  }
+  triggers { githubPush() }
 
   environment {
     REGISTRY      = 'ghcr.io'
@@ -18,20 +10,20 @@ pipeline {
   }
 
   stages {
+
     stage('Checkout') {
-      steps {
-        checkout scm
-      }
+      steps { checkout scm }
     }
 
-    stage('Install dependencies') {
+    stage('Build & Test') {
+      agent {
+        docker {
+          image 'node:20-alpine'
+          args  '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+      }
       steps {
         sh 'npm ci'
-      }
-    }
-
-    stage('Lint & Unit Tests') {
-      steps {
         sh 'npm run lint'
         sh 'npm test -- --coverage'
       }
@@ -44,15 +36,17 @@ pipeline {
     }
 
     stage('Build Docker Image') {
-      steps {
-        sh 'docker build -t $IMAGE_NAME .'
+      agent {
+        docker {
+          image 'docker:24-cli'
+          args  '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
       }
+      steps { sh 'docker build -t $IMAGE_NAME .' }
     }
 
     stage('Push image') {
-      when {
-        branch 'main'
-      }
+      when { branch 'main' }
       steps {
         withCredentials([string(credentialsId: 'ghcr-token', variable: 'TOKEN')]) {
           sh '''
@@ -64,9 +58,7 @@ pipeline {
     }
 
     stage('Deploy to Test') {
-      when {
-        branch 'main'
-      }
+      when { branch 'main' }
       steps {
         sshagent(credentials: ['deploy-key']) {
           sh '''
