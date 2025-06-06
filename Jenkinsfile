@@ -1,6 +1,5 @@
 pipeline {
   agent any
-
   triggers { githubPush() }
 
   environment {
@@ -10,7 +9,6 @@ pipeline {
   }
 
   stages {
-
     stage('Checkout') {
       steps { checkout scm }
     }
@@ -22,14 +20,15 @@ pipeline {
           args  '-v /var/run/docker.sock:/var/run/docker.sock'
         }
       }
+      options { skipDefaultCheckout() }     // évite le re-clone automatique
       steps {
-        sh 'npm ci'
+        sh 'npm install'                    // ou npm ci si tu ajoutes package-lock.json
         sh 'npm run lint'
         sh 'npm test -- --coverage'
       }
       post {
         always {
-          junit 'coverage/junit.xml'
+          junit 'coverage/junit.xml'        // ne pas oublier de générer ce fichier
           cobertura coberturaReportFile: 'coverage/cobertura-coverage.xml', failNoReports: false
         }
       }
