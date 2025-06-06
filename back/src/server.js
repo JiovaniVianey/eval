@@ -1,5 +1,5 @@
-import express from 'express';
 import dotenv from 'dotenv';
+import express from 'express';
 import articleRoutes from './routes/article.routes.js';
 
 dotenv.config();
@@ -9,8 +9,10 @@ const app = express();
 app.use(express.json());
 app.use('/articles', articleRoutes);
 
-// Error handler
-// eslint-disable-next-line no-unused-vars
+app.get('/', (req, res) => {
+  res.send('Welcome to the Article API');
+});
+
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ error: 'Internal Server Error' });
