@@ -1,18 +1,3 @@
-/*
- * Jenkinsfile – CI/CD pipeline for Node.js + MySQL project
- *
- * Ce pipeline illustre l’enchaînement complet :
- *   1. Récupération du dépôt Git
- *   2. Installation des dépendances Node.js (npm ci)
- *   3. Lint + tests unitaires (Jest) avec rapport de couverture
- *   4. Construction d’une image Docker de l’application
- *   5. Publication de cette image sur le registre (ici GitHub Container Registry)
- *   6. Déploiement automatique (environnement de test) – via SSH & docker‑compose
- *
- * Le pipeline se déclenche automatiquement à chaque push sur la branche main
- * grâce au trigger GitHub Push.
- */
-
 pipeline {
 
   agent {
