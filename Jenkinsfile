@@ -14,24 +14,25 @@ pipeline {
     }
 
     stage('Build & Test') {
-      agent {
-        docker {
-          image 'node:20-alpine'
-          args  '-v /var/run/docker.sock:/var/run/docker.sock'
+        agent {
+            docker {
+            image 'node:20-alpine'
+            args  '-v /var/run/docker.sock:/var/run/docker.sock'
+            reuseNode true                // ← même workspace, pas de “@2”
+            }
         }
-      }
-      options { skipDefaultCheckout() }     // évite le re-clone automatique
-      steps {
-        sh 'npm install'                    // ou npm ci si tu ajoutes package-lock.json
-        sh 'npm run lint'
-        sh 'npm test -- --coverage'
-      }
-      post {
-        always {
-          junit 'coverage/junit.xml'        // ne pas oublier de générer ce fichier
-          cobertura coberturaReportFile: 'coverage/cobertura-coverage.xml', failNoReports: false
+        options { skipDefaultCheckout() } // garde 1 seul clone (celui du stage Checkout)
+        steps {
+            sh 'npm install'                // ou npm ci si lockfile présent
+            sh 'npm run lint'
+            sh 'npm test -- --coverage'
         }
-      }
+        post {
+            always {
+            junit 'coverage/junit.xml'
+            cobertura coberturaReportFile: 'coverage/cobertura-coverage.xml', failNoReports: false
+            }
+        }
     }
 
     stage('Build Docker Image') {
